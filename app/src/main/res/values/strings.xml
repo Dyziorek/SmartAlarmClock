@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">SmartAlarmClock</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="powerOn">Power On</string>
+    <string name="powerOff">Power Off</string>
+    <string name="timeStartCheck">Monitot Phone Time Start</string>
+    <string name="timeEndCheck">Monitor Time End</string>
+</resources>
