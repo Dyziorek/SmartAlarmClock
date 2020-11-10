@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_name" translatable="false">SmartPlugChannel</string>
+    <string name="channel_description" translatable="false">SmartPlugNote</string>
+    <string name="monitor_calls" translatable="false">MonitorCalls</string>
+    <string name="monitor_start_time" translatable="false">MonitorStartTime</string>
+    <string name="monitor_end_time" translatable="false">MonitorEndTime</string>
+    <string name="monitor_days_weeks" translatable="false">MonitorDayWeeks</string>
+    <string name="smartplug_host" translatable="false">SmartPlugHost</string>
+    <string name="smartplug_port" translatable="false">SmartPlugPort</string>
+    <string name="pref_key_language" translatable="false">language</string>
+</resources>

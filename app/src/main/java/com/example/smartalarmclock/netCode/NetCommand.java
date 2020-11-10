@@ -1,13 +1,17 @@
 package com.example.smartalarmclock.netCode;
 
 import android.util.Log;
+
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class NetCommand {
 
@@ -33,10 +37,17 @@ public class NetCommand {
         return commandsInit;
     }
 
-    protected static String command(InetAddress inetAddress, int port, String commandText) throws ConnectException
+    protected static String command(InetAddress inetAddress, int port, int timeOut, String commandText)
     {
         try {
-            Socket sockConn = new Socket(inetAddress, port);
+            Socket sockConn = new Socket();
+            if (timeOut != 0)
+            {
+                sockConn.connect(new InetSocketAddress(inetAddress, port), timeOut);
+            }
+            else {
+                sockConn.connect(new InetSocketAddress(inetAddress, port), 100);
+            }
 
             InputStream iStream = sockConn.getInputStream();
             OutputStream oStream = sockConn.getOutputStream();
@@ -45,7 +56,9 @@ public class NetCommand {
             iStream.read(buffer);
             oStream.close();
             iStream.close();
-            return XorCrypt.decryptStr(buffer);
+            sockConn.close();
+            String decrypted = XorCrypt.decryptStr(buffer);
+            return decrypted;
         }
         catch (Exception err)
         {
@@ -54,20 +67,25 @@ public class NetCommand {
         return null;
     }
 
-    public static void powerOn(InetAddress inetAddress, int port) throws ConnectException
+    public static void powerOn(InetAddress inetAddress, int port, int timeOut)
     {
-        command(inetAddress, port, commands.get("on"));
+        Runnable commandRun = () -> command(inetAddress, port, timeOut, commands.get("on"));
+        Executors.newSingleThreadExecutor().submit(commandRun);
     }
 
-    public static void powerOff(InetAddress inetAddress, int port) throws ConnectException
+    public static void powerOff(InetAddress inetAddress, int port, int timeOut)
     {
-        command(inetAddress, port, commands.get("off"));
+        Runnable commandRun = () -> command(inetAddress, port, timeOut, commands.get("off"));
+        Executors.newSingleThreadExecutor().submit(commandRun);
     }
 
-    public static String info(InetAddress inetAddress, int port) throws ConnectException
+    public static Future<String> info(InetAddress inetAddress, int port, int timeOut)
     {
         Log.d("NET", "info() called with: inetAddress = [" + inetAddress + "], port = [" + port + "]");
-        return command(inetAddress, port, commands.get("info"));
+        Callable<String> commandRun = () -> command(inetAddress, port, timeOut, commands.get("info"));
+        Future<String> returnData =  Executors.newSingleThreadExecutor().submit(commandRun);
+
+        return returnData;
     }
 }
 

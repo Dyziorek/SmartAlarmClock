@@ -5,6 +5,17 @@
     <string name="title_notifications">Notifications</string>
     <string name="powerOn">Power On</string>
     <string name="powerOff">Power Off</string>
-    <string name="timeStartCheck">Monitot Phone Time Start</string>
+    <string name="timeStartCheck">Monitor Time Start</string>
     <string name="timeEndCheck">Monitor Time End</string>
+    <string name="reset">Reset Smart Plug</string>
+    <string name="enable_monitor">Active Monitoring</string>
+    <string name="monitored_plug">Monitored SmartPlug</string>
+    <string name="phoneCalled">Phone Called</string>
+    <string name="phoneCallAt">"Phone called at: "</string>
+    <string name="saveSettings">Save</string>
+    <string name="error_save_settings">Error saving settings</string>
+    <string name="error_find_smartPlug">Cannot Find SmartPlug</string>
+    <string name="get_info">Info</string>
+    <string name="unknown_info">Unknown Info</string>
+    <string name="smartPlugInfo">Info: hw:%s, Name:%s, On:%s</string>
 </resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SmartAlarmClock</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Pulpit</string>
+    <string name="title_notifications">Powiadomienia</string>
+    <string name="powerOn">Włącz</string>
+    <string name="powerOff">Wyłącz</string>
+    <string name="timeStartCheck">Początek czasu śledzenia</string>
+    <string name="timeEndCheck">Koniec czasu śledzenia</string>
+    <string name="reset">Reset Ustawień</string>
+    <string name="enable_monitor">Monitorowanie</string>
+    <string name="monitored_plug">Monitorowany SmartPlug</string>
+    <string name="phoneCalled">Telefon Zadzwonił</string>
+    <string name="phoneCallAt">"Telefon dzwonił o: "</string>
+    <string name="saveSettings">Zapisz</string>
+    <string name="error_save_settings">Błąd zapisu ustawień</string>
+    <string name="error_find_smartPlug">SmartPlug nie znaleziony</string>
+    <string name="get_info">Informacje</string>
+    <string name="unknown_info">Nieznana odpowiedź</string>
+    <string name="smartPlugInfo">Info: Sprzet:%s, Nazwa:%s, Wlaczony:%s</string>
+</resources>

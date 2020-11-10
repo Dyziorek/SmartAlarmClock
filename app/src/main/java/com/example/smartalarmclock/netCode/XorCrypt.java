@@ -3,6 +3,7 @@ package com.example.smartalarmclock.netCode;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class XorCrypt {
 
@@ -16,7 +17,9 @@ public class XorCrypt {
         byte[] decrypted = decrypt(input);
         try
         {
-            return new String(decrypted, "UTF-8");
+            byte[] decryptedPad = new byte[decrypted.length-5];
+            System.arraycopy(decrypted, 5, decryptedPad, 0, decrypted.length-6);
+            return new String(decryptedPad, "UTF-8");
         }
         catch (Exception anyErr)
         {

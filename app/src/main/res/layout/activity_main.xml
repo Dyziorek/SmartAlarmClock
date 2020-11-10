@@ -5,11 +5,41 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#2318651C"
+    android:backgroundTint="#932D2D"
+    android:clipToPadding="false"
     android:paddingTop="?attr/actionBarSize">
+
+    <TextView
+        android:id="@+id/monitorTimeEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:ems="10"
+        android:text="@string/timeEndCheck"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextStartTime" />
+
+    <EditText
+        android:id="@+id/editEndTime"
+        android:layout_width="217dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="12dp"
+        android:autofillHints="Start Time"
+        android:ems="10"
+        android:inputType="time"
+        android:singleLine="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.074"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/monitorTimeEnd"
+        tools:text="@tools:sample/date/hhmm" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
-        android:layout_width="462dp"
+        android:layout_width="wrap_content"
         android:layout_height="93dp"
         android:layout_marginBottom="4dp"
         android:background="?android:attr/windowBackground"
@@ -25,75 +55,80 @@
     <fragment
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="418dp"
+        android:layout_height="479dp"
         app:defaultNavHost="true"
         app:layout_constraintBottom_toTopOf="@id/nav_view"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:navGraph="@navigation/mobile_navigation"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <Button
-        android:id="@+id/powerOn"
-        android:layout_width="114dp"
-        android:layout_height="54dp"
-        android:text="@string/powerOn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/nav_host_fragment"
-        tools:layout_editor_absoluteY="108dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.965"
+        app:navGraph="@navigation/mobile_navigation" />
 
     <Button
         android:id="@+id/powerOff"
         android:layout_width="113dp"
         android:layout_height="53dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
         android:text="@string/powerOff"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/nav_host_fragment"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/powerOn" />
 
     <EditText
         android:id="@+id/editTextStartTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="64dp"
         android:ems="10"
         android:inputType="time"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="164dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="@tools:sample/date/hhmm" />
 
-    <EditText
-        android:id="@+id/editEndTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <TextView
+        android:id="@+id/monitorTimeStart"
+        android:layout_width="159dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="28dp"
         android:ems="10"
-        android:inputType="time"
-        android:singleLine="false"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="272dp"
-        tools:text="@tools:sample/date/hhmm" />
-
-    <EditText
-        android:id="@+id/editTextTextPersonName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
         android:text="@string/timeStartCheck"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="101dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editTextTextPersonName2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <Button
+        android:id="@+id/powerOn"
+        android:layout_width="114dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/powerOn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/smartPlugHost"
+        android:layout_width="294dp"
+        android:layout_height="42dp"
+        android:layout_marginBottom="24dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="@string/timeEndCheck"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="218dp" />
+        android:gravity="center"
+        android:inputType="none"
+        android:padding="1dp"
+        android:paddingTop="1dp"
+        android:paddingEnd="1dp"
+        android:rotationX="3"
+        android:text="@string/app_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        app:layout_constraintBottom_toTopOf="@+id/monitorTimeStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@string/app_name" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

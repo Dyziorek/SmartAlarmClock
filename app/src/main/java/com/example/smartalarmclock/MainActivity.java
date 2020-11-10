@@ -1,26 +1,39 @@
 package com.example.smartalarmclock;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.LocaleList;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.example.smartalarmclock.classes.LocaleChanger;
+import com.example.smartalarmclock.classes.SharedAppCompatActivity;
+import com.example.smartalarmclock.helper.Settings;
 import com.example.smartalarmclock.netCode.NetCommand;
 import com.example.smartalarmclock.netCode.NetSubsystem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import java.net.ConnectException;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+import static com.example.smartalarmclock.helper.Settings.settings;
+
+public class MainActivity extends SharedAppCompatActivity {
 
 
     @Override
@@ -29,24 +42,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
-        final NetSubsystem netSubsystem = new NetSubsystem(9999);
-
-
-        final Button buttonOn = findViewById(R.id.powerOn);
-        buttonOn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (netSubsystem.smartPlugSockets.size() > 0)
-                    try {
-                        NetCommand.powerOn(netSubsystem.smartPlugSockets.get(0), 9999);
-                    }
-                catch (Exception  error)
-                {
-                    Log.e("ACT", "onClick: " + error.getMessage(), error);
-                }
-
+        if (SmartClockStates.netInstance == null) {
+            if (settings.getMonitorCalls() && settings.getSmartPlugHost() != null) {
+                SmartClockStates.netInstance = NetSubsystem.getInstance(settings.getSmartPlugPort(), settings.getSmartPlugHost());
             }
-        });
+        }
+        final Button buttonOn = findViewById(R.id.powerOn);
+        buttonOn.setOnClickListener( v -> powerOn());
+        final Button buttonOff = findViewById(R.id.powerOff);
+        buttonOff.setOnClickListener( v -> powerOff());
+
+        checkPermissions();
+        createNotificationChannel();
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -56,6 +63,70 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+
+        settings.setPrefLanguage("pl");
+        LocaleChanger.setLocale(this);
+
+        final TextView monitorStart = findViewById(R.id.editTextStartTime);
+        final TextView monitorEnd = findViewById(R.id.editEndTime);
+
+        monitorStart.setText(settings.getMonitorStart());
+        monitorEnd.setText(settings.getMonitorEnd());
+
+        final TextView pluginHost = findViewById(R.id.smartPlugHost);
+        pluginHost.setText(settings.getSmartPlugHost());
+    }
+
+    private void powerOn()
+    {
+        if (SmartClockStates.netInstance != null && SmartClockStates.netInstance.smartPlugSockets.size() > 0)
+            try {
+                NetCommand.powerOn(SmartClockStates.netInstance.smartPlugSockets.get(0), 9999, 5000);
+            }
+            catch (Exception  error)
+            {
+                Log.e("ACT", "onClick: " + error.getMessage(), error);
+            }
+    }
+
+    private void powerOff()
+    {
+        if (SmartClockStates.netInstance != null && SmartClockStates.netInstance.smartPlugSockets.size() > 0)
+            try {
+                NetCommand.powerOff(SmartClockStates.netInstance.smartPlugSockets.get(0), 9999, 5000);
+            }
+            catch (Exception  error)
+            {
+                Log.e("ACT", "onClick: " + error.getMessage(), error);
+            }
+    }
+
+
+    public void save()
+    {
+        final TextView monitorStart = findViewById(R.id.editTextStartTime);
+        final TextView monitorEnd = findViewById(R.id.editEndTime);
+        final TextView smartPlugHost = findViewById(R.id.smartPlugHost);
+
+        settings.setMonitorStart(monitorStart.getText().toString());
+        settings.setMonitorEnd(monitorEnd.getText().toString());
+
+        if (!smartPlugHost.getText().toString().equals(settings.getSmartPlugHost()))
+        {
+            smartPlugHost.setText(settings.getSmartPlugHost());
+        }
+
+        if (SmartClockStates.netInstance == null) {
+            if (settings.getMonitorCalls() && settings.getSmartPlugHost() != null) {
+                SmartClockStates.netInstance = NetSubsystem.getInstance(settings.getSmartPlugPort(), settings.getSmartPlugHost());
+            }
+        }
+    }
+
+    @Override
+    protected void attachBaseContext(Context base)
+    {
+        super.attachBaseContext(LocaleChanger.onAttach(base));
     }
 
     private void checkPermissions()
@@ -68,6 +139,31 @@ public class MainActivity extends AppCompatActivity {
                     SmartClockStates.MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
         }
 
+        if (getApplicationContext().checkSelfPermission(Manifest.permission.PROCESS_OUTGOING_CALLS)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission has not been granted, therefore prompt the user to grant permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.PROCESS_OUTGOING_CALLS},
+                    SmartClockStates.MY_PERMISSIONS_REQUEST_PROCESS_OUTGOING_CALLS);
+        }
 
     }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel(SmartClockStates.CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
 }
