@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 import static com.example.smartalarmclock.helper.Settings.settings;
 
 public class SmartClockStates {
@@ -37,9 +36,7 @@ public class SmartClockStates {
             ExecutorService execSingle = Executors.newSingleThreadExecutor();
             execSingle.submit(() -> {
                 try {
-                    if (settings.isAllowedToCall()) {
-                        NetCommand.powerOn(InetAddress.getByName(settings.getSmartPlugHost()), settings.getSmartPlugPort(), 5000);
-                    }
+                    NetCommand.powerOn(InetAddress.getByName(settings.getSmartPlugHost()), settings.getSmartPlugPort(), 5000);
                 }
                 catch (Exception excErr)
                 {
@@ -52,10 +49,14 @@ public class SmartClockStates {
     public static void sendNotification(Context ctx, String number, Date start)
     {
         Resources res = ctx.getResources();
+        String phoneCallAt = res.getString(R.string.phone_call_at);
+        String phoneOn = res.getString(R.string.plugOn);
+        DateFormat fmt = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_plug)
-                .setContentTitle(res.getString(R.string.phoneCalled))
-                .setContentText(res.getString(R.string.phoneCallAt) + DateFormat.getDateInstance(DateFormat.SHORT).format(start))
+                .setContentTitle(res.getString(R.string.phone_called))
+                .setContentText(String.format(phoneCallAt, fmt.format(start),phoneOn))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ctx);

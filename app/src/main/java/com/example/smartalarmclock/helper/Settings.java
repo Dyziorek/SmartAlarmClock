@@ -3,22 +3,15 @@ package com.example.smartalarmclock.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
 import com.example.smartalarmclock.R;
-import com.example.smartalarmclock.classes.SharedAppCompatActivity;
 
-import java.net.InetAddress;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 
 
 public class Settings {
@@ -62,19 +55,30 @@ public class Settings {
     {
         if (getMonitorCalls())
         {
-            ZonedDateTime nowZoned = ZonedDateTime.now();
-            ZonedDateTime monitorStartTime = LocalTime.parse(getMonitorStart(), DateTimeFormatter.ofPattern("H:mm")).atDate(nowZoned.toLocalDate()).atZone(nowZoned.getZone());
-            ZonedDateTime monitorEndTime = LocalTime.parse(getMonitorEnd(), DateTimeFormatter.ofPattern("H:mm")).atDate(nowZoned.toLocalDate()).atZone(nowZoned.getZone());
+            ZonedDateTime callTime = ZonedDateTime.now();
+            ZonedDateTime monitorStartTime = LocalTime.parse(getMonitorStart(), DateTimeFormatter.ofPattern("H:mm")).atDate(callTime.toLocalDate()).atZone(callTime.getZone());
+            ZonedDateTime monitorEndTime = LocalTime.parse(getMonitorEnd(), DateTimeFormatter.ofPattern("H:mm")).atDate(callTime.toLocalDate()).atZone(callTime.getZone());
+
+            Duration minutes = Duration.between(monitorStartTime, monitorEndTime); // whole period between current start time and end time - negative means start time is before end time
 
             // first verify if end time is before start time to adjust end time
             if (Duration.between(monitorStartTime, monitorEndTime).isNegative())
             {
-                // end time before start - means it should be next day
-                monitorEndTime = monitorEndTime.plusDays(1);
+                // end time before start - means it should be next day  - update Duration to correct period
+                minutes = Duration.between(monitorStartTime, monitorEndTime.plusDays(1));
             }
-            Duration minutes = Duration.between(monitorStartTime, monitorEndTime);
-            if (!Duration.between(monitorStartTime, nowZoned).isNegative() && Duration.between(monitorStartTime, nowZoned).getSeconds() < minutes.getSeconds())
+
+            if (Duration.between(monitorStartTime, callTime).isNegative())  //  call time is before start time - so we need to verify if is before end
             {
+                // we need to check if call time is before end time
+                if (Duration.between(callTime, monitorEndTime).getSeconds() > 0)
+                {
+                    return true;
+                }
+            }
+            else if (Duration.between(monitorStartTime, callTime).getSeconds() < minutes.getSeconds()) //  call time is after start time - so we need if is still before end
+            {
+
                 return true;
             }
         }

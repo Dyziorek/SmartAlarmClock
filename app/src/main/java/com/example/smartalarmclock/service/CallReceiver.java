@@ -6,11 +6,16 @@ import com.example.smartalarmclock.SmartClockStates;
 
 import java.util.Date;
 
+import static com.example.smartalarmclock.helper.Settings.settings;
+
 public class CallReceiver extends PhoneCallReceiver {
     @Override
     protected void onIncomingCallReceived(Context ctx, String number, Date start) {
-        SmartClockStates.callReceived(ctx, number, start);
-        SmartClockStates.sendNotification(ctx, number, start);
+        if (settings.isAllowedToCall())
+        {
+            SmartClockStates.callReceived(ctx, number, start);
+            SmartClockStates.sendNotification(ctx, number, start);
+        }
     }
 
     @Override
