@@ -10,6 +10,8 @@ import androidx.core.app.NotificationManagerCompat;
 import com.example.smartalarmclock.helper.Settings;
 import com.example.smartalarmclock.netCode.NetCommand;
 import com.example.smartalarmclock.netCode.NetSubsystem;
+import com.example.smartalarmclock.persistence.NotifyEntity;
+import com.example.smartalarmclock.persistence.NotifyDatabase;
 
 import java.net.InetAddress;
 import java.text.DateFormat;
@@ -61,6 +63,12 @@ public class SmartClockStates {
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ctx);
 
+        NotifyEntity newNotifyEntity = new NotifyEntity();
+        newNotifyEntity.setNotifyID(Calendar.getInstance().getTimeInMillis());
+        newNotifyEntity.setNotify_text(String.format(phoneCallAt, fmt.format(start),plugState));
+        newNotifyEntity.setNotify_title(res.getString(R.string.phoneCalled));
+        Completable completableAction = NotifyDatabase.getInstance(ctx).notifyDao().insertNotify(newNotifyEntity);
+        completableAction.blockingAwait();
 // notificationId is a unique int for each notification that you must define
         notificationManager.notify(notificationID, builder.build());
     }

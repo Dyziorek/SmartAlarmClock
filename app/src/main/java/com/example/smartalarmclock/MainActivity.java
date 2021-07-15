@@ -23,6 +23,7 @@ import com.example.smartalarmclock.netCode.NetCommand;
 import com.example.smartalarmclock.netCode.NetSubsystem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -61,9 +62,11 @@ public class MainActivity extends SharedAppCompatActivity {
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(navView, navController);
-
+        ActionBar barItem = this.getSupportActionBar();
+        if (barItem != null) {
+            NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+            NavigationUI.setupWithNavController(navView, navController);
+        }
         settings.setPrefLanguage("pl");
         LocaleChanger.setLocale(this);
 
