@@ -14,7 +14,7 @@ public class CallReceiver extends PhoneCallReceiver {
         if (settings.isAllowedToCall())
         {
             SmartClockStates.callReceived(ctx, number, start);
-            SmartClockStates.sendNotification(ctx, number, start);
+            //SmartClockStates.sendNotificationPhone(ctx, number, start);
         }
     }
 

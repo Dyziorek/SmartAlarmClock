@@ -18,8 +18,12 @@
     <string name="get_info">Info</string>
     <string name="unknown_info">Unknown Info</string>
     <string name="smartPlugInfo">Info: hw:%s, Name:%s, On:%s</string>
-    <string name="phone_call_at">Phone Called At: %s, SmartPlug is: %s</string>
+    <string name="phone_call_at">Phone Called At: %s\nSmartPlug is: %s</string>
     <string name="phone_called">Intercepted phone call - SmartPlug activated</string>
     <string name="plugOn">On</string>
     <string name="plugOff">Off</string>
+    <string name="alarmClock">Alarm Clock</string>
+    <string name="alarmTime">Alarm Time</string>
+    <string name="alarm_call">Alarm at: %s</string>
+    <string name="debugFlag">Debug</string>
 </resources>

@@ -11,14 +11,15 @@ import java.util.List;
 
 public class NotificationsViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
+    private final NotifyDataSource dataSource;
 
-    public NotificationsViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is notifications fragment");
+    private final LiveData<List<NotifyEntity>> notes;
+
+    public NotificationsViewModel(NotifyDataSource dbSource) {
+        dataSource = dbSource;
+        notes = dbSource.getNotifications();
     }
 
-    public LiveData<String> getText() {
-        return mText;
-    }
+
+
 }

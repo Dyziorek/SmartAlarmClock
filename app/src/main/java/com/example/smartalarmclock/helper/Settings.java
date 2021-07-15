@@ -12,6 +12,8 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.concurrent.Callable;
 
 
 public class Settings {
@@ -19,12 +21,15 @@ public class Settings {
     private SharedPreferences saveSharedData;
 
     public static String KEY_MONITOR_CALLS;
+    public static String KEY_ALARM_ACTIVE;
+    public static String KEY_ALARM_TIME;
     public static String KEY_MONITOR_START_TIME;
     public static String KEY_MONITOR_END_TIME;
     public static String KEY_MONITOR_DAY_WEEKS;
     public static String KEY_SMARTPLUG_HOST;
     public static String KEY_SMARTPLUG_PORT;
     public static String KEY_PREF_LANGUAGE;
+    public static String KEY_PREF_DEBUG;
 
 
     public Settings(Context appContext)
@@ -49,6 +54,9 @@ public class Settings {
         KEY_SMARTPLUG_HOST = res.getString(R.string.smartplug_host);
         KEY_SMARTPLUG_PORT = res.getString(R.string.smartplug_port);
         KEY_PREF_LANGUAGE = res.getString(R.string.pref_key_language);
+        KEY_ALARM_ACTIVE = "alarmActive";
+        KEY_ALARM_TIME = "alarmTime";
+        KEY_PREF_DEBUG = "debug";
     }
 
     public boolean isAllowedToCall()
@@ -86,6 +94,24 @@ public class Settings {
         return false;
     }
 
+    public long isAlarmSet()
+    {
+        if (getAlarmStart() && !getAlarmTime().equals(""))
+        {
+            ZonedDateTime callTime = ZonedDateTime.now();
+            ZonedDateTime alarmTime = LocalTime.parse(getAlarmTime(), DateTimeFormatter.ofPattern("H:mm")).atDate(callTime.toLocalDate()).atZone(callTime.getZone());
+
+            Duration timeData = Duration.between(callTime, alarmTime); // whole period between current start time and end time - negative means start time is before end time
+            if (timeData.isNegative())
+            {
+                alarmTime = alarmTime.plusDays(1);
+            }
+            return alarmTime.toInstant().toEpochMilli();
+        }
+
+        return -1;
+    }
+
     public void setMonitorCalls(boolean monitorCalls)
     {
         saveSetting(KEY_MONITOR_CALLS, new Boolean(monitorCalls).toString());
@@ -112,6 +138,34 @@ public class Settings {
     public void setMonitorStart(String timeStart)
     {
         saveSetting(KEY_MONITOR_START_TIME, timeStart);
+    }
+
+    public void setAlarmStart(boolean enableAlarm)
+    {
+        saveSetting(KEY_ALARM_ACTIVE, new Boolean(enableAlarm).toString());
+    }
+
+    public boolean getAlarmStart()
+    {
+        if(getSettings(KEY_ALARM_ACTIVE).isEmpty())
+        {
+            return false;
+        }
+        else return Boolean.parseBoolean(getSettings(KEY_ALARM_ACTIVE));
+    }
+
+    public String getAlarmTime()
+    {
+        if(getSettings(KEY_ALARM_TIME).isEmpty())
+        {
+            return "";
+        }
+        else return getSettings(KEY_ALARM_TIME);
+    }
+
+    public void setAlarmTime(String timeStart)
+    {
+        saveSetting(KEY_ALARM_TIME, timeStart);
     }
 
     public String getMonitorEnd()
@@ -154,6 +208,20 @@ public class Settings {
             return null;
         }
         return getSettings(KEY_SMARTPLUG_HOST);
+    }
+
+    public boolean isDebug()
+    {
+        if(getSettings(KEY_PREF_DEBUG).isEmpty())
+        {
+            return false;
+        }
+        else return Boolean.parseBoolean(getSettings(KEY_PREF_DEBUG));
+    }
+
+    public void setDebug(Boolean debugFlag)
+    {
+        saveSetting(KEY_PREF_DEBUG, new Boolean(debugFlag).toString());
     }
 
     public String getPrefLanguage()

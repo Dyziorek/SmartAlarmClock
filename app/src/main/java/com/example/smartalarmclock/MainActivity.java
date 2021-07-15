@@ -1,9 +1,12 @@
 package com.example.smartalarmclock;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -21,6 +24,7 @@ import com.example.smartalarmclock.classes.SharedAppCompatActivity;
 import com.example.smartalarmclock.helper.Settings;
 import com.example.smartalarmclock.netCode.NetCommand;
 import com.example.smartalarmclock.netCode.NetSubsystem;
+import com.example.smartalarmclock.service.OnAlarmReceiver;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.ActionBar;
@@ -30,6 +34,10 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import java.time.LocalDateTime;
+import java.time.temporal.IsoFields;
+import java.time.temporal.TemporalField;
+import java.util.Calendar;
 import java.util.Locale;
 
 import static com.example.smartalarmclock.helper.Settings.settings;
@@ -126,6 +134,32 @@ public class MainActivity extends SharedAppCompatActivity {
         }
     }
 
+    public void setAlarm()
+    {
+        if (settings.isAlarmSet() > 0) {
+            Intent i = new Intent(this, OnAlarmReceiver.class);
+            PendingIntent pi = PendingIntent.getBroadcast(this, 0, i,
+                    PendingIntent.FLAG_ONE_SHOT);
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND) + 10);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+            Log.e("DEBUG", "setAlarm: call 10 sec later:" + calendar.getTimeInMillis() + ", from alarmSet:" + settings.isAlarmSet());
+            Calendar timerCal = Calendar.getInstance();
+            timerCal.setTimeInMillis(settings.isAlarmSet());
+
+            Log.e("DEBUG", "setAlarm: call 10 sec later:" + calendar.toString() + ", from alarmSet:" +  timerCal.toString());
+            alarmManager.set(AlarmManager.RTC_WAKEUP, settings.isAlarmSet(), pi);
+        }
+        else {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            Intent i = new Intent(this, OnAlarmReceiver.class);
+            PendingIntent pi = PendingIntent.getBroadcast(this, 0, i,
+                    PendingIntent.FLAG_ONE_SHOT);
+            alarmManager.cancel(pi);
+        }
+    }
+
     @Override
     protected void attachBaseContext(Context base)
     {
@@ -149,6 +183,16 @@ public class MainActivity extends SharedAppCompatActivity {
                     new String[]{Manifest.permission.PROCESS_OUTGOING_CALLS},
                     SmartClockStates.MY_PERMISSIONS_REQUEST_PROCESS_OUTGOING_CALLS);
         }
+
+        if (getApplicationContext().checkSelfPermission(Manifest.permission.WAKE_LOCK)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission has not been granted, therefore prompt the user to grant permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WAKE_LOCK},
+                    SmartClockStates.MY_PERMISSIONS_REQUEST_PROCESS_WAKE_LOCK);
+        }
+
+
 
     }
 

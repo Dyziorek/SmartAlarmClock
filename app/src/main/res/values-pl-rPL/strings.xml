@@ -20,7 +20,11 @@
     <string name="unknown_info">Nieznana odpowiedź</string>
     <string name="smartPlugInfo">Info: Sprzet:%s, Nazwa:%s, Wlaczony:%s</string>
     <string name="phone_called">Przechwycono telefon - aktywacja SmartPLuga.</string>
-    <string name="phone_call_at">Telefon zadzwonil o: %s SmartPlus jest: %s</string>
+    <string name="phone_call_at">Telefon zadzwonil o: %s \nSmartPlug jest: %s</string>
     <string name="plugOn">Włączony</string>
     <string name="plugOff">Wyłączony</string>
+    <string name="alarmClock">Budzik</string>
+    <string name="alarmTime">Czas Budzenia</string>
+    <string name="alarm_call">Alarm o godz: %s</string>
+    <string name="debugFlag">Debug</string>
 </resources>

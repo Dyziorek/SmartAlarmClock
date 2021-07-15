@@ -1,6 +1,11 @@
 package com.example.smartalarmclock.netCode;
 
+import java.util.concurrent.TimeUnit;
 import android.util.Log;
+
+import com.example.smartalarmclock.helper.Result;
+
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,6 +17,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import static android.content.ContentValues.TAG;
+
 
 public class NetCommand {
 
@@ -73,6 +81,19 @@ public class NetCommand {
         Executors.newSingleThreadExecutor().submit(commandRun);
     }
 
+    public static void powerOnSync(InetAddress inetAddress, int port, int timeOut)
+    {
+        try {
+            Runnable commandRun = () -> command(inetAddress, port, timeOut, commands.get("on"));
+            Future<?> notReturn = Executors.newSingleThreadExecutor().submit(commandRun);
+            notReturn.get(timeOut, TimeUnit.MILLISECONDS);
+        }
+        catch (Exception runtimeExp)
+        {
+            Log.e(TAG, "powerOnSync: error", runtimeExp);
+        }
+    }
+
     public static void powerOff(InetAddress inetAddress, int port, int timeOut)
     {
         Runnable commandRun = () -> command(inetAddress, port, timeOut, commands.get("off"));
@@ -86,6 +107,27 @@ public class NetCommand {
         Future<String> returnData =  Executors.newSingleThreadExecutor().submit(commandRun);
 
         return returnData;
+    }
+
+    public static boolean isPowerOn(InetAddress inetAddress, int port, int timeOut)
+    {
+        try {
+            Log.d("NET", "info() called with: inetAddress = [" + inetAddress + "], port = [" + port + "]");
+            Callable<String> commandRun = () -> command(inetAddress, port, timeOut, commands.get("info"));
+            Future<String> returnData = Executors.newSingleThreadExecutor().submit(commandRun);
+
+            String jsonString = "{" + returnData.get(timeOut, TimeUnit.MILLISECONDS);
+            JSONObject parsedObj = new JSONObject(jsonString);
+            JSONObject objSysInfo = parsedObj.getJSONObject("system").getJSONObject("get_sysinfo");
+            String hw = objSysInfo.getString("hw_ver");
+            String name = objSysInfo.getString("alias");
+            return objSysInfo.getInt("relay_state") == 0 ? false : true;
+        }
+        catch (Exception runtimeExp)
+        {
+            Log.e(TAG, "powerOnSync: error", runtimeExp);
+        }
+        return  false;
     }
 }
 
